@@ -17,6 +17,7 @@ pan.start(0)
 
 tilt.ChangeDutyCycle(8)
 pan.ChangeDutyCycle(8)#center point lock
+
 time.sleep(3)
 
 #------------------------------------------------------
@@ -50,10 +51,10 @@ class PTmodule(box):
 
         #center vs camera point
         if (self.Cx != self.lx):
-            pan.ChangeDutyCycle((dy-240)/48+13)
+            pan.ChangeDutyCycle((dx-240)/48+13)
             
         if (self.Cy != self.ly):
-            tilt.ChangeDutyCycle((dx-320)/64+13)
+            tilt.ChangeDutyCycle((dy-320)/64+13)
         #-----------------------------    
             
         loc = (dx, dy) #delta tuple
@@ -61,31 +62,44 @@ class PTmodule(box):
         
         print (dx, dy)
         print (loc)#(dx,dy) tuple
-        
-#--------------------------------------------------------- 
 
-#------------------------------------------------------
-
+#   setup      Tx   Ty    Tw   Th   Cx  Cy  label lx ly
 PT = PTmodule(-150, 250, 100, 100, 100, 200, 1, 0, 0)
 
+#------------------------------------------------------
+x = 8
+y = 8
 def on_size(object, userdata, msg):
-    print("aaaa")
     PT.size()
 
 def on_delta(object, userdata, msg):
-    print("bbbb")
     PT.delta()
 
+def on_moveX(object, userdata, msg):
+    if (move_x >= 0) #App's key >
+        pan.ChangeDutyCycle(x = x+1)
+    if (move_x <= 0) #App's key <
+        pan.ChangeDutyCycle(x = x-1)
+    
+def on_moveY(object, userdata, msg):
+    if (move_y >= 0) #App's key ^
+        tilt.ChangeDutyCycle(y = y+1)
+    if (move_y <= 0) #App's key v
+        tilt.ChangeDutyCycle(y = y-1)
+    
 def on_message(client, userdata, msg):
-        print(msg.topic+" "+str(msg.qos)+" "+str(msg.payload))
+    print(msg.topic+" "+str(msg.qos)+" "+str(msg.payload))
+    #size = int(str(msg.payload)[2:3])
 
+    
 client = paho.Client()#...
-client.on_message = on_message
 
-
-client.message_callback_add("ptz/size", on_size)
+client.message_callback_add("ptz/size", on_size)#callback to function
 client.message_callback_add("ptz/delta", on_delta)
+client.message_callback_add("ptz/message", on_message)
+
 client.connect("localhost", 1883)#broker set
-client.subscribe("ptz/#")
+client.subscribe("ptz/#")#sub 'ptz'
+
 client.loop_forever()
 
