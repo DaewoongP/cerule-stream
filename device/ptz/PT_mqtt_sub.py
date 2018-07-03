@@ -4,21 +4,20 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 tiltPin = 17
 panPin = 27
+SG_freq = 50
 
 GPIO.setup(tiltPin, GPIO.OUT)
 GPIO.setup(panPin, GPIO.OUT)
 GPIO.setwarnings(False)
 
-tilt = GPIO.PWM(tiltPin, 50)
-pan = GPIO.PWM(panPin, 50)
+tilt = GPIO.PWM(tiltPin, SG_freq)
+pan = GPIO.PWM(panPin, SG_freq)
 
-tilt.start(0)
-pan.start(0)
+tilt_angle = 90
+pan_angle = 90
 
-tilt.ChangeDutyCycle(8)
-pan.ChangeDutyCycle(8)#center point lock
-
-time.sleep(3)
+tilt.start(7.5)
+pan.start(7.5)
 
 #------------------------------------------------------
 
@@ -51,10 +50,10 @@ class PTmodule(box):
 
         #center vs camera point
         if (self.Cx != self.lx):
-            pan.ChangeDutyCycle((dx-240)/48+13)
+            pan.ChangeDutyCycle((dx-320)/64+12)
             
         if (self.Cy != self.ly):
-            tilt.ChangeDutyCycle((dy-320)/64+13)
+            tilt.ChangeDutyCycle((dy-240)/48+12)
         #-----------------------------    
             
         loc = (dx, dy) #delta tuple
@@ -67,30 +66,32 @@ class PTmodule(box):
 PT = PTmodule(-150, 250, 100, 100, 100, 200, 1, 0, 0)
 
 #------------------------------------------------------
-x = 8
-y = 8
-def on_size(object, userdata, msg):
-    PT.size()
-
-def on_delta(object, userdata, msg):
-    PT.delta()
 
 def on_moveX(object, userdata, msg):
-    if (move_x >= 0) #App's key >
-        pan.ChangeDutyCycle(x = x+1)
-    if (move_x <= 0) #App's key <
-        pan.ChangeDutyCycle(x = x-1)
+    if (move_x >= 0): #App's key >
+        pan_angle = pan_angle + 10
+        pan.ChangeDutyCycle(1/20*pan_angle +3)
+    if (move_x <= 0): #App's key <
+        pan_angle = pan_angle - 10
+        pan.ChangeDutyCycle(1/20*pan_angle +3)
     
 def on_moveY(object, userdata, msg):
-    if (move_y >= 0) #App's key ^
-        tilt.ChangeDutyCycle(y = y+1)
-    if (move_y <= 0) #App's key v
-        tilt.ChangeDutyCycle(y = y-1)
+    if (move_y >= 0): #App's key ^
+        tilt_angle = tilt_angle + 10
+        tilt.ChangeDutyCycle(1/20*tilt_angle +3)
+    if (move_y <= 0): #App's key v
+        tilt_angle = tilt_angle - 10
+        tilt.ChangeDutyCycle(1/20*tilt_angle +3)
     
 def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.qos)+" "+str(msg.payload))
     #size = int(str(msg.payload)[2:3])
 
+def on_size(object, userdata, msg):
+    PT.size()
+
+def on_delta(object, userdata, msg):
+    PT.delta()
     
 client = paho.Client()#...
 
