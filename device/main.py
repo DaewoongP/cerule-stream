@@ -1,11 +1,5 @@
-import pantilt
+from ptzmodule import ptmodule
+bbox = ptmodule.cam()
+bbox.size(100,200)
 
-import mqtt.client
-
-def move_x(obj, asdf, msg):
-	value = msg.payload
-	pantilt.x(value)
-
-cli = Clint()
-
-cli.add_callback("ptz/x", move_x)
+bbox.delta(300, 400, 0, 0)
