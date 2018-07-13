@@ -1,4 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
+
+# Weights Files
+*.weights
+*.pth
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -467,3 +472,5 @@ $RECYCLE.BIN/
 *.lnk
 
 .idea/
+app/CeruleStream/app/libs/
+server/data/
