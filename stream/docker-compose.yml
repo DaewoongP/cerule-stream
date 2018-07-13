@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+    nginx:
+        image: nginx:latest
+        ports:
+            - "8080:80"
+            - "1883:1883"
+            - "1935:1935"
