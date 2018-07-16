@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ButtonExample</string>
+    <string name="up_button">Up</string>
+    <string name="down_button">Down</string>
+    <string name="left_button">Left</string>
+    <string name="right_button">Right</string>
+</resources>
