@@ -1,7 +1,7 @@
 import paho.mqtt.client as paho
-import ptzmodule.ptz.ptz
+import ptz.ptz
 
-move = ptzmodule.ptz.ptz.move()
+move = ptz.ptz.move()
 
 class cam:
     def size(self, Tw, Th):#bounding box's size return
