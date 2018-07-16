@@ -1,6 +1,6 @@
 import paho.mqtt.client as paho
 import ptz.ptz
-
+ 
 move = ptz.ptz.move()
 
 class cam:
