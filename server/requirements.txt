@@ -1,6 +1,0 @@
-torch
-torch-vision
-numpy
-pandas
-opencv-contrib-python
-paho-mqtt
