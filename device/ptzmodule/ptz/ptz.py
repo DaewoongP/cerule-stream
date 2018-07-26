@@ -14,33 +14,20 @@ pan.start(7.5)
 
 class move:
         
-    def right(self, pan_angle):
-        pan_angle = pan_angle + 10
-        print(1/20*pan_angle +3)        
-        if (pan_angle > 180):
-            pan.ChangeDutyCycle(7.5)
+    def x(self, dx):
+        duty = (dx - 320) / 64 + 12
+        if (duty>= 11):
+            pan.ChangeDutyCycle(7)
+        elif (duty <= 3):
+            pan.ChangeDutyCycle(7)
         else:
-            pan.ChangeDutyCycle(1/20*pan_angle +3)
-        
-    def left(self, pan_angle):
-        pan_angle = pan_angle - 10        
-        if (pan_angle < 0):
-            pan.ChangeDutyCycle(7.5)
-        else:
-            pan.ChangeDutyCycle(1/20*pan_angle +3)
+            pan.ChangeDutyCycle(duty)
 
-            
-    def up(self, tilt_angle):
-        tilt_angle = tilt_angle + 10
-        if (tilt_angle > 180):
-            tilt.ChangeDutyCycle(7.5)
+    def y(self, dy):
+        duty = (dy - 240) / 48 + 12
+        if (duty>= 11):
+            tilt.ChangeDutyCycle(7)
+        elif (duty <= 3):
+            tilt.ChangeDutyCycle(7)
         else:
-            tilt.ChangeDutyCycle(1/20*tilt_angle +3)
-
-    def down(self, tilt_angle):
-        tilt_angle = tilt_angle - 10
-        if (tilt_angle < 0):
-            tilt.ChangeDutyCycle(7.5)
-        else:
-            tilt.ChangeDutyCycle(1/20*tilt_angle +3)
-    
+            tilt.ChangeDutyCycle(duty)
