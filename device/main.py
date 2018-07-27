@@ -5,7 +5,7 @@ import paho.mqtt.client as paho
 
 import json
 import time
-
+import ptz
 parser = argparse.ArgumentParser(description="PtzCamera")
 parser.add_argument('-b', '--broker-url', default="safecorners.io:1883", type=str,
                     metavar='PATH', help='mqtt broker address')
@@ -19,7 +19,7 @@ def execute_ffmpeg(output_url):
                '-i', '/dev/video0',
                output_url]
     print(command)
-    pipe = sp.Popen(command, stdin=sp.PIPE, stderr=sp.PIPE)
+    _ = sp.Popen(command, stdin=sp.PIPE, stderr=sp.PIPE)
 
 
 def system_message(object, userdata, msg):
