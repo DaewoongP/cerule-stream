@@ -1,6 +1,7 @@
 ## TODO
-- [ ] Open rtsp stream
+- [x] Open rtsp stream
+- [ ] Connect mqtt broker
 - [ ] Detect Object
 - [ ] Send a BBoxes
 - [ ] Overlay a BBoxes on frame
-- [ ] Write rtmp stream
+- [x] Write rtmp stream
