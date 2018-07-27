@@ -6,6 +6,8 @@ import paho.mqtt.client as paho
 import json
 import time
 import ptz
+
+
 parser = argparse.ArgumentParser(description="PtzCamera")
 parser.add_argument('-b', '--broker-url', default="safecorners.io:1883", type=str,
                     metavar='PATH', help='mqtt broker address')
@@ -36,10 +38,11 @@ def main():
     client.connect(host, int(port))
 
     # subscribe a system messages
-    client.message_callback_add("SYS/#", system_message)
-    client.subscribe("SYS/#")
+    client.message_callback_add("$SYS/#", system_message)
+    client.subscribe("$SYS/#")
 
     # Instantiate ptz module
+    print(ptz.test())
 
     # Streaming
     execute_ffmpeg(args.output_url)
