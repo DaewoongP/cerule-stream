@@ -11,7 +11,7 @@ parser.add_argument('-b', '--broker-url', default="safecorners.io:1883", type=st
                     metavar='PATH', help='mqtt broker address')
 parser.add_argument('-i', '--input-url', default='rtsp://localhost:5454/live.rtsp', type=str,
                     metavar='PATH', help='url used to open a rtsp streaming')
-parser.add_argument('-o', '--output-url', default='rtmp://localhost:1935/dash/live', type=str,
+parser.add_argument('-o', '--output-url', default='rtmp://localhost:1935/hls/live', type=str,
                     metavar='PATH', help='url used to set up rtmp streaming')
 
 
@@ -19,14 +19,14 @@ def stream_factory(output_url, width, height, fps):
     output_command = ['ffmpeg',
                       '-f', 'rawvideo',
                       '-vcodec', 'rawvideo',
-                      '-s', '{}x{}'.format(width, height),  # size of one frame
+                      '-s', '{}x{}'.format(int(width), int(height)),  # size of one frame
                       '-pix_fmt', 'rgb24',
-                      '-r', fps,  # frames per second
+                      '-r', '{}'.format(fps),  # frames per second
                       '-i', '-',  # The input comes from a pipe
                       '-an',  # Tells FFMPEG not to expect any audio
                       '-vcodec', 'libx264',
                       '-f', 'flv',
-                      output_url]
+                      '{}'.format(output_url)]
     return output_command
 
 
@@ -60,6 +60,7 @@ def main():
 
     # Open output stream
     output_command = stream_factory(args.output_url, input_width, input_height, input_fps)
+    print(output_command)
     output_stream = sp.Popen(output_command, stdin=sp.PIPE, stderr=sp.PIPE)
 
     while cap.isOpened():
