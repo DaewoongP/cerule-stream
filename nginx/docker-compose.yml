@@ -2,7 +2,9 @@ version: '2'
 
 services:
     nginx:
-        image: nginx:latest
+        build:
+          context: .
+          dockerfile: ./Dockerfile
         ports:
             - "8080:80"
             - "1883:1883"
