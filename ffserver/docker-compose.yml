@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+    ffserver:
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        expose:
+            - "8090"
+            - "5454"
+        ports:
+            - "8090:8090"
+            - "5454:5454"
+
