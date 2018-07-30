@@ -7,5 +7,5 @@ services:
           dockerfile: ./Dockerfile
         ports:
             - "8080:80"
-            - "1883:1883"
             - "1935:1935"
+            - "1883:1883"

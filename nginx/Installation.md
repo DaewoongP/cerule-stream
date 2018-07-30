@@ -1,7 +1,5 @@
 # Installation
 
-
-
 ##Ubuntu
 
 To compile NGINX from the sources, we first need to install its dependencies: 

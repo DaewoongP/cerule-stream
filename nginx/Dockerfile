@@ -33,7 +33,7 @@ RUN mkdir -p /var/www/hls && mkdir -p /var/www/dash
 COPY ./nginx/nginx.conf /usr/local/nginx/nginx.conf
 COPY ./index.html /var/www/index.html
 
- 
-
 EXPOSE 80 443 1883 1935
-CMD nginx
+
+
+CMD ["nginx", "-g", "daemon off;"]
