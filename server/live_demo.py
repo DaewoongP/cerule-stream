@@ -152,9 +152,8 @@ def main():
 
             # Display the resulting frame
             cv2.imshow("frame", orig_im)
-            print(orig_im.size)
             frames += 1
-            print("FPS of the video is {:5.2f}".format(frames / (time.time() - start)))
+            print("FPS of the video is {:5.2f}, size: {}".format(frames / (time.time() - start), orig_im.size))
 
         else:
             break
