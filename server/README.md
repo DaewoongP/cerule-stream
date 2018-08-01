@@ -1,6 +1,7 @@
 ## TODO
 - [x] Open rtsp stream
-- [ ] Connect mqtt broker
+- [x] Connect mqtt broker
+- [ ] Add callback to mqtt Client
 - [ ] Detect Object
 - [ ] Send a BBoxes
 - [ ] Overlay a BBoxes on frame
