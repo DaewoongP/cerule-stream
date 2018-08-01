@@ -39,6 +39,32 @@ def system_message(object, userdata, msg):
     print("{}: {}".format(msg.topic, msg.payload.decode('utf-8')))
 
 
+def prep_image(img, inp_dim):
+    """ Prepare image for inputting to the neural network.
+    Returns a Variable
+    """
+    orig_im = img
+    dim = orig_im.shape[1], orig_im.shape[0]
+    img = cv2.resize(orig_im, (inp_dim, inp_dim))
+    img_ = img[:, :, ::-1].transpose((2, 0, 1)).copy()
+    img_ = torch.from_numpy(img_).float().div(255.0).unsqueeze(0)
+    return img_, orig_im, dim
+
+
+def write(x, img, classes, colors):
+    c1 = tuple(x[1:3].int())
+    c2 = tuple(x[3:5].int())
+    cls = int(x[-1])
+    label = "{0}".format(classes[cls])
+    color = random.choice(colors)
+    cv2.rectangle(img, c1, c2,color, 1)
+    t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 1 , 1)[0]
+    c2 = c1[0] + t_size[0] + 3, c1[1] + t_size[1] + 4
+    cv2.rectangle(img, c1, c2,color, -1)
+    cv2.putText(img, label, (c1[0], c1[1] + t_size[1] + 4), cv2.FONT_HERSHEY_PLAIN, 1, [225,255,255], 1);
+    return img
+
+
 def main():
     global args
     args = parser.parse_args()
@@ -83,21 +109,53 @@ def main():
     input_width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     input_height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     input_fps = cap.get(cv2.CAP_PROP_FPS)
+    input_size = input_width * input_height * 3
     print("[input stream] width: {}, height: {}, fps: {}".format(input_width, input_height, input_fps))
+
+    frames = 0
+    start = time.time()
 
     while cap.isOpened():
         ret, frame = cap.read()  # frame size: 640x360x3(=691200)
         if ret:
             # Our detect operations on the frame come here
 
-            # Send a BBoxes
+            img, orig_im, dim = prep_image(frame, inp_dim)
+
+            if CUDA:
+                im_dim = im_dim.cuda()
+                img = img.cuda()
+
+            output = model(Variable(img), CUDA)
+            output = write_results(output, confidence, num_classes, nms=True, nms_conf=nms_thesh)
+
+            if type(output) == int:
+                frames += 1
+                print("FPS of the video is {:5.2f}".format(frames / (time.time() - start)))
+                cv2.imshow("frame", orig_im)
+                key = cv2.waitKey(1)
+                if key & 0xFF == ord('q'):
+                    break
+                continue
+
+            output[:, 1:5] = torch.clamp(output[:, 1:5], 0.0, float(inp_dim)) / inp_dim
+
+            output[:, [1, 3]] *= frame.shape[1]
+            output[:, [2, 4]] *= frame.shape[0]
+
+            classes = load_classes('yolo/data/coco.names')
+            colors = pkl.load(open("yolo/pallete", "rb"))
 
             # Overlay on screen
-
+            list(map(lambda x: write(x, orig_im, classes, colors), output))
+            # Send a BBoxes
 
             # Display the resulting frame
-            cv2.imshow('frame', frame)
-            print(frame.size)
+            cv2.imshow("frame", orig_im)
+            print(orig_im.size)
+            frames += 1
+            print("FPS of the video is {:5.2f}".format(frames / (time.time() - start)))
+
         else:
             break
         if cv2.waitKey(1) & 0xFF == ord('q'):
