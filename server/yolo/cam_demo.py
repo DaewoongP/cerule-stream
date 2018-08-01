@@ -72,7 +72,7 @@ def arg_parse():
 
 if __name__ == '__main__':
     cfgfile = "cfg/yolov3.cfg"
-    weightsfile = "yolov3.weights"
+    weightsfile = "weights/yolov3.weights"
     num_classes = 80
 
     args = arg_parse()
@@ -80,11 +80,7 @@ if __name__ == '__main__':
     nms_thesh = float(args.nms_thresh)
     start = 0
     CUDA = torch.cuda.is_available()
-    
 
-    
-    
-    num_classes = 80
     bbox_attrs = 5 + num_classes
     
     model = Darknet(cfgfile)
