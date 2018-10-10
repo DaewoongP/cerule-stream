@@ -16,7 +16,7 @@ sleep(2)
 while True:
     sleep(fps)
     capture_time = datetime.datetime.now()
-    img_name = "{}-{}-{}-{}.jpg".format(capture_time.hour, capture_time.minute, capture_time.second, capture_time.microsecond))
-    camera.capture(img_name)
+    image_name = "{}-{}-{}-{}.jpg".format(capture_time.hour, capture_time.minute, capture_time.second, capture_time.microsecond))
+    camera.capture("capture/{}".format(image_name))
 
 # camera.stop_preview()
