@@ -3,6 +3,8 @@ import asyncio
 import json
 import logging
 import os
+import platform
+import ssl
 
 from aiohttp import web
 
@@ -38,8 +40,15 @@ async def offer(request):
             await pc.close()
             pcs.discard(pc)
 
-    # doesn't support on macOs
-    player = MediaPlayer('/dev/video0', options={'video_size': 'vga'})
+    # open webcam
+    options = {'video_size': '640x480',
+               'frame_rate': '30',
+              }
+    if platform.system() == 'Darwin':
+        player = MediaPlayer('default:none', format='avfoundation', options=options)
+
+    else:
+        player = MediaPlayer('/dev/video0', format='v4l2', options=options)
 
     await pc.setRemoteDescription(offer)
     for t in pc.getTransceivers():
@@ -56,11 +65,11 @@ async def offer(request):
         text=json.dumps({
             'sdp': pc.localDescription.sdp,
             'type': pc.localDescription.type
-        })
-    )
+        }))
 
 
 pcs = set()
+
 
 async def on_shutdown(app):
     # close peer connections
@@ -71,6 +80,8 @@ async def on_shutdown(app):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='WebRTC webcam demo')
+    parser.add_argument('--cert-file', help='SSL certificate file (for HTTPS)')
+    parser.add_argument('--key-file', help='SSL key file (for HTTPS)')
     parser.add_argument('--port', type=int, default=8080,
                         help='Port for HTTP server (default: 8080)')
     parser.add_argument('--verbose', '-v', action='count')
@@ -79,9 +90,15 @@ if __name__ == '__main__':
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
 
+    if args.cert_file:
+        ssl_context = ssl.SSLContext()
+        ssl_context.load_cert_chain(args.cert_file, args.key_file)
+    else:
+        ssl_context = None
+
     app = web.Application()
     app.on_shutdown.append(on_shutdown)
     app.router.add_get('/', index)
     app.router.add_get('/client.js', javascript)
     app.router.add_post('/offer', offer)
-    web.run_app(app, port=args.port)
+    web.run_app(app, port=args.port, ssl_context=ssl_context)

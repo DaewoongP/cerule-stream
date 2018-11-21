@@ -28,7 +28,7 @@ function negotiate() {
                         resolve();
                     }
                 }
-                pc.addEventListener('icegatheringstatechange', checkState)
+                pc.addEventListener('icegatheringstatechange', checkState);
             }
         });
     }).then(function() {
@@ -47,7 +47,7 @@ function negotiate() {
         return response.json();
     }).then(function(answer) {
         return pc.setRemoteDescription(answer);
-    }).catch(function (e) {
+    }).catch(function(e) {
         alert(e);
     });
 }
